@@ -2,42 +2,75 @@ package com.anish.screen;
 
 import java.awt.Color;
 import java.awt.event.KeyEvent;
+import java.util.Random;
 
-import com.anish.calabashbros.BubbleSorter;
-import com.anish.calabashbros.Calabash;
-import com.anish.calabashbros.World;
+import com.anish.Monsters.BubbleSorter;
+import com.anish.Monsters.Monster;
+import com.anish.Monsters.World;
 
 import asciiPanel.AsciiPanel;
 
 public class WorldScreen implements Screen {
 
     private World world;
-    private Calabash[] bros;
+    public Monster[] monsters;
+    private Monster[][] matrix;
     String[] sortSteps;
+
+    public static final int MATRIX_WIDTH = 8;
+    public static final int MATRIX_HEIGHT = 8;
 
     public WorldScreen() {
         world = new World();
 
-        bros = new Calabash[7];
+        final int mycount = 64;
 
-        bros[3] = new Calabash(new Color(204, 0, 0), 1, world);
-        bros[5] = new Calabash(new Color(255, 165, 0), 2, world);
-        bros[1] = new Calabash(new Color(252, 233, 79), 3, world);
-        bros[0] = new Calabash(new Color(78, 154, 6), 4, world);
-        bros[4] = new Calabash(new Color(50, 175, 255), 5, world);
-        bros[6] = new Calabash(new Color(114, 159, 207), 6, world);
-        bros[2] = new Calabash(new Color(173, 127, 168), 7, world);
+        //这个世界有64个小妖怪
+        int monCnt = 64;
+        if(monsters == null){
+            monsters = new Monster[MATRIX_HEIGHT*MATRIX_WIDTH];
+        }
+        //从赤道黄
+        for(int i = 0;i < 16;i++){
+            monsters[monCnt-1] = new Monster(new Color(255-i*5,i*15,0), monCnt, world);
+            monCnt -= 1;
+        }
+        //从黄到绿
+        for(int i = 16;i > 0;i--){
+            monsters[monCnt-1] = new Monster(new Color(i*15,255-i*5,0), monCnt, world);
+            monCnt -= 1;
+        }
+        //从绿到青
+        for(int i = 0;i < 16;i++){
+            monsters[monCnt-1] = new Monster(new Color(0,255-i*5,i*10), monCnt, world);
+            monCnt -= 1;
+        }
+        //从青到蓝
+        for(int i = 16;i > 0;i--){
+            monsters[monCnt-1] = new Monster(new Color(0,i*10,255-i*5), monCnt, world);
+            monCnt -= 1;
+        }
 
-        world.put(bros[0], 10, 10);
-        world.put(bros[1], 12, 10);
-        world.put(bros[2], 14, 10);
-        world.put(bros[3], 16, 10);
-        world.put(bros[4], 18, 10);
-        world.put(bros[5], 20, 10);
-        world.put(bros[6], 22, 10);
+        if (matrix == null) {
+            matrix = new Monster[MATRIX_WIDTH][MATRIX_HEIGHT];
+        }
 
-        BubbleSorter<Calabash> b = new BubbleSorter<>();
-        b.load(bros);
+        //将64个小妖怪随机排列入矩阵。
+        Random r = new Random();
+        for(int i = 0;i < mycount;i++)
+        {
+            int row = r.nextInt(MATRIX_HEIGHT);
+            int col = r.nextInt(MATRIX_WIDTH);
+            while(matrix[row][col] != null){
+                row = r.nextInt(MATRIX_HEIGHT);
+                col = r.nextInt(MATRIX_WIDTH);
+            }
+            matrix[row][col] = monsters[i];
+            world.put(matrix[row][col], 10+col*2, 10+row*2);
+        }
+
+        BubbleSorter<Monster> b = new BubbleSorter<>();
+        b.load(matrix);
         b.sort();
 
         sortSteps = this.parsePlan(b.getPlan());
@@ -47,16 +80,20 @@ public class WorldScreen implements Screen {
         return plan.split("\n");
     }
 
-    private void execute(Calabash[] bros, String step) {
+    private void execute(Monster[][] monsters, String step) {
         String[] couple = step.split("<->");
-        getBroByRank(bros, Integer.parseInt(couple[0])).swap(getBroByRank(bros, Integer.parseInt(couple[1])));
+        getMonByRank(monsters, Integer.parseInt(couple[0])).swap(getMonByRank(monsters, Integer.parseInt(couple[1])));
     }
 
-    private Calabash getBroByRank(Calabash[] bros, int rank) {
-        for (Calabash bro : bros) {
-            if (bro.getRank() == rank) {
-                return bro;
+    private Monster getMonByRank(Monster[][] monsters, int rank) {
+        for (Monster[] line : monsters) {
+            for(Monster mon : line)
+            {
+                if (mon.getRank() == rank) {
+                    return mon;
+                }
             }
+            
         }
         return null;
     }
@@ -79,7 +116,7 @@ public class WorldScreen implements Screen {
     public Screen respondToUserInput(KeyEvent key) {
 
         if (i < this.sortSteps.length) {
-            this.execute(bros, sortSteps[i]);
+            this.execute(matrix, sortSteps[i]);
             i++;
         }
 

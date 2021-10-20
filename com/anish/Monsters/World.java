@@ -1,11 +1,13 @@
-package com.anish.calabashbros;
+package com.anish.Monsters;
+
 
 public class World {
 
-    public static final int WIDTH = 40;
-    public static final int HEIGHT = 20;
+    public static final int WIDTH = 100;
+    public static final int HEIGHT = 80;
 
     private Tile<Thing>[][] tiles;
+    
 
     public World() {
 
@@ -20,6 +22,7 @@ public class World {
             }
         }
     }
+        
 
     public Thing get(int x, int y) {
         return this.tiles[x][y].getThing();
