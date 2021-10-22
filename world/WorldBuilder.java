@@ -1,6 +1,7 @@
 package world;
 
 import java.util.Random;
+import maze.*;
 
 /*
  * Copyright (C) 2015 s-zhouj
@@ -28,6 +29,7 @@ public class WorldBuilder {
     private int width;
     private int height;
     private Tile[][] tiles;
+    private int[][] maze;
 
     public WorldBuilder(int width, int height) {
         this.width = width;
@@ -37,6 +39,30 @@ public class WorldBuilder {
 
     public World build() {
         return new World(tiles);
+    }
+
+    public WorldBuilder generateMaze(){
+        MazeGenerator mazeGenerator = new MazeGenerator(this.width);
+        mazeGenerator.generateMaze();
+        maze = mazeGenerator.getMaze();
+        
+        for (int width = 0; width < this.width; width++) {
+            for (int height = 0; height < this.height; height++) {
+                switch (maze[width][height]) {
+                    case 0:
+                        tiles[width][height] = Tile.WALL;
+                        break;
+                    case 1:
+                        tiles[width][height] = Tile.FLOOR;
+                        break;
+                    default:
+                        System.out.println("generate maze failed!");
+                        break;
+                }
+            }
+        }
+
+        return this;
     }
 
     private WorldBuilder randomizeTiles() {
@@ -55,6 +81,7 @@ public class WorldBuilder {
         }
         return this;
     }
+
 
     private WorldBuilder smooth(int factor) {
         Tile[][] newtemp = new Tile[width][height];

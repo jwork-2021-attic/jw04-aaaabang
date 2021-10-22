@@ -86,6 +86,19 @@ public class World {
         this.creatures.add(creature);
     }
 
+    public void setStartLocation(Creature creature){
+        int x;
+        int y;
+
+        x = 0;
+        y = 0;
+
+        creature.setX(x);
+        creature.setY(y);
+
+        this.creatures.add(creature);
+    }
+
     public Creature creature(int x, int y) {
         for (Creature c : this.creatures) {
             if (c.x() == x && c.y() == y) {

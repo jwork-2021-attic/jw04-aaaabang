@@ -38,8 +38,8 @@ public class PlayScreen implements Screen {
     private List<String> oldMessages;
 
     public PlayScreen() {
-        this.screenWidth = 80;
-        this.screenHeight = 24;
+        this.screenWidth = 50;
+        this.screenHeight = 50;
         createWorld();
         this.messages = new ArrayList<String>();
         this.oldMessages = new ArrayList<String>();
@@ -51,19 +51,19 @@ public class PlayScreen implements Screen {
     private void createCreatures(CreatureFactory creatureFactory) {
         this.player = creatureFactory.newPlayer(this.messages);
 
-        for (int i = 0; i < 8; i++) {
-            creatureFactory.newFungus();
-        }
+        // for (int i = 0; i < 8; i++) {
+        //     creatureFactory.newFungus();
+        // }
     }
 
     private void createWorld() {
-        world = new WorldBuilder(90, 31).makeCaves().build();
+        world = new WorldBuilder(screenWidth, screenWidth).generateMaze().build();
     }
 
     private void displayTiles(AsciiPanel terminal, int left, int top) {
         // Show terrain
-        for (int x = 0; x < screenWidth; x++) {
-            for (int y = 0; y < screenHeight; y++) {
+        for (int x = 0; x < 50; x++) {
+            for (int y = 0; y < 50; y++) {
                 int wx = x + left;
                 int wy = y + top;
 
@@ -78,9 +78,9 @@ public class PlayScreen implements Screen {
         for (Creature creature : world.getCreatures()) {
             if (creature.x() >= left && creature.x() < left + screenWidth && creature.y() >= top
                     && creature.y() < top + screenHeight) {
-                if (player.canSee(creature.x(), creature.y())) {
+                //if (player.canSee(creature.x(), creature.y())) {
                     terminal.write(creature.glyph(), creature.x() - left, creature.y() - top, creature.color());
-                }
+                //}
             }
         }
         // Creatures can choose their next action now
@@ -102,9 +102,9 @@ public class PlayScreen implements Screen {
         displayTiles(terminal, getScrollX(), getScrollY());
         // Player
         terminal.write(player.glyph(), player.x() - getScrollX(), player.y() - getScrollY(), player.color());
-        // Stats
-        String stats = String.format("%3d/%3d hp", player.hp(), player.maxHP());
-        terminal.write(stats, 1, 23);
+        // // Stats
+        // String stats = String.format("%3d/%3d hp", player.hp(), player.maxHP());
+        // terminal.write(stats, 1, 23);
         // Messages
         displayMessages(terminal, this.messages);
     }
