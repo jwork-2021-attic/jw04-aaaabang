@@ -27,8 +27,12 @@ public class StartScreen extends RestartScreen {
 
     @Override
     public void displayOutput(AsciiPanel terminal) {
-        terminal.write("This is the start screen.", 0, 0);
-        terminal.write("Press ENTER to continue...", 0, 1);
+
+
+        terminal.write("This is the start screen.", 10, 15,AsciiPanel.blue,AsciiPanel.white);
+        terminal.write("Press ENTER to continue...", 10, 17,AsciiPanel.red,AsciiPanel.white);
+      //  terminal.write("Press A to get a maze runner", 10, 19,AsciiPanel.yellow,AsciiPanel.white);
+
     }
 
 }

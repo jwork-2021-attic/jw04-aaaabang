@@ -36,17 +36,74 @@ public class PlayScreen implements Screen {
     private int screenHeight;
     private List<String> messages;
     private List<String> oldMessages;
+    
+    private int maze_dim;
+    int[][] maze;
+  
+    // int[][] visit;
+    // int[][] dis;
 
     public PlayScreen() {
-        this.screenWidth = 50;
-        this.screenHeight = 50;
+        
+        this.screenHeight = 60;
+        this.maze_dim = 40;
+        this.screenWidth = maze_dim;
+        // this.runner = runner;
+        // visit = new int[maze_dim][maze_dim];
+
         createWorld();
         this.messages = new ArrayList<String>();
         this.oldMessages = new ArrayList<String>();
 
         CreatureFactory creatureFactory = new CreatureFactory(this.world);
         createCreatures(creatureFactory);
+
+        // if(runner == true){
+        //     dfs(0, 0);
+        // }
     }
+
+    /* private void next(int a,int b,int x, int y)
+    // {
+        
+    //     if (visit[x][y] == 0) { dfs(x, y); }
+    // }
+    // // 深度优先
+    // private void dfs(int x, int y)
+    // {
+    //     visit[x][y] = 1;
+    //     if(x == maze_dim-1 && y == maze_dim-1)
+    //     {
+    //         return;
+    //     }
+             
+    //     if (x + 1 < maze_dim && maze[x + 1][y] == 1) //右
+    //     { 
+    //         player.moveBy(1, 0);
+    //         next(x, y, x + 1, y);
+    //         player.moveBy(-1, 0);
+    //     }
+    //     if (x - 1 >=0 && maze[x - 1][y] == 1) //左
+    //     {
+    //         player.moveBy(-1, 0);
+    //         next(x, y, x - 1, y);
+    //         player.moveBy(1, 0);
+    //     }
+    //     if (y + 1 < maze_dim && maze[x][y + 1] == 1) //下
+    //     {
+    //         player.moveBy(0, 1);
+    //         next(x, y, x, y+1);
+    //         player.moveBy(0, -1);
+    //     }
+    //     if (y - 1 >=0 && maze[x][y - 1] == 1) //上
+    //     {
+    //         player.moveBy(0, -1);
+    //         next(x, y, x, y-1);
+    //         player.moveBy(0, 1);
+    //     }
+        
+    // }*/
+
 
     private void createCreatures(CreatureFactory creatureFactory) {
         this.player = creatureFactory.newPlayer(this.messages);
@@ -57,23 +114,26 @@ public class PlayScreen implements Screen {
     }
 
     private void createWorld() {
-        world = new WorldBuilder(screenWidth, screenWidth).generateMaze().build();
+        WorldBuilder worldBuilder = new WorldBuilder(maze_dim, maze_dim);
+        world = worldBuilder.generateMaze().build();
+        maze = worldBuilder.getMaze();
     }
 
     private void displayTiles(AsciiPanel terminal, int left, int top) {
         // Show terrain
-        for (int x = 0; x < 50; x++) {
-            for (int y = 0; y < 50; y++) {
+        for (int x = 0; x < maze_dim; x++) {
+            for (int y = 0; y < maze_dim; y++) {
                 int wx = x + left;
                 int wy = y + top;
 
                 if (player.canSee(wx, wy)) {
                     terminal.write(world.glyph(wx, wy), x, y, world.color(wx, wy));
                 } else {
-                    terminal.write(world.glyph(wx, wy), x, y, Color.DARK_GRAY);
+                    terminal.write(world.glyph(wx, wy), x, y, Color.gray);
                 }
             }
         }
+
         // Show creatures
         for (Creature creature : world.getCreatures()) {
             if (creature.x() >= left && creature.x() < left + screenWidth && creature.y() >= top
@@ -83,8 +143,23 @@ public class PlayScreen implements Screen {
                 //}
             }
         }
+        if(player.x() == maze_dim-1 && player.y() == maze_dim-1)
+        {
+            chanToWinScreen(terminal);
+            return;
+        }
+
+        //show destination
+        terminal.write((char)3,maze_dim-1,maze_dim-1,Color.PINK);
+
         // Creatures can choose their next action now
         world.update();
+    }
+
+    private void chanToWinScreen(AsciiPanel terminal){
+        WinScreen win = new WinScreen();
+        win.displayOutput(terminal);
+
     }
 
     private void displayMessages(AsciiPanel terminal, List<String> messages) {
@@ -124,9 +199,13 @@ public class PlayScreen implements Screen {
             case KeyEvent.VK_DOWN:
                 player.moveBy(0, 1);
                 break;
+            default:
+                break;
         }
         return this;
     }
+
+
 
     public int getScrollX() {
         return Math.max(0, Math.min(player.x() - screenWidth / 2, world.width() - screenWidth));

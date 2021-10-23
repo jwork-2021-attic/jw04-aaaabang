@@ -49,6 +49,13 @@ public class World {
         }
     }
 
+    public void floorSwPath(int x,int y){
+        if( tiles[x][y] == Tile.FLOOR)
+            tiles[x][y] = Tile.PATH;
+        else if( tiles[x][y] == Tile.PATH)
+            tiles[x][y] = Tile.FLOOR;
+    }
+    
     public char glyph(int x, int y) {
         return tiles[x][y].glyph();
     }

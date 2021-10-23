@@ -33,7 +33,11 @@ public abstract class RestartScreen implements Screen {
     public Screen respondToUserInput(KeyEvent key) {
         switch (key.getKeyCode()) {
             case KeyEvent.VK_ENTER:
+                System.out.println("restart");
                 return new PlayScreen();
+            // case KeyEvent.VK_A:
+            //     Screen playScreen = new PlayScreen(true);
+            //     return playScreen;
             default:
                 return this;
         }

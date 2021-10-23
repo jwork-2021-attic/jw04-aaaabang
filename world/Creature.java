@@ -19,6 +19,8 @@ package world;
 
 import java.awt.Color;
 
+import asciiPanel.AsciiPanel;
+
 /**
  *
  * @author Aeranythe Echosong
@@ -29,6 +31,9 @@ public class Creature {
 
     private int x;
 
+    public World getWorld(){
+        return world;
+    }
     public void setX(int x) {
         this.x = x;
     }

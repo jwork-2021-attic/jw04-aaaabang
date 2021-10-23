@@ -26,9 +26,13 @@ import java.util.List;
 public class PlayerAI extends CreatureAI {
 
     private List<String> messages;
-
+    private Creature creature;
+    private World world;
     public PlayerAI(Creature creature, List<String> messages) {
         super(creature);
+        this.creature = creature;
+        this.world = creature.getWorld();
+        world.floorSwPath(0, 0);
         this.messages = messages;
     }
 
@@ -36,10 +40,14 @@ public class PlayerAI extends CreatureAI {
         if (tile.isGround()) {
             creature.setX(x);
             creature.setY(y);
+            world.floorSwPath(x, y);
         } else if (tile.isDiggable()) {
             creature.dig(x, y);
         }
     }
+
+
+
 
     public void onNotify(String message) {
         this.messages.add(message);

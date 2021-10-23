@@ -65,6 +65,10 @@ public class WorldBuilder {
         return this;
     }
 
+    public int[][] getMaze(){
+        return maze;
+    }
+
     private WorldBuilder randomizeTiles() {
         for (int width = 0; width < this.width; width++) {
             for (int height = 0; height < this.height; height++) {

@@ -37,7 +37,7 @@ public class ApplicationMain extends JFrame implements KeyListener {
 
     public ApplicationMain() {
         super();
-        terminal = new AsciiPanel(70, 70, AsciiFont.TALRYTH_15_15);
+        terminal = new AsciiPanel(50, 60, AsciiFont.TALRYTH_15_15);
         add(terminal);
         pack();
         screen = new StartScreen();
@@ -57,6 +57,7 @@ public class ApplicationMain extends JFrame implements KeyListener {
      * @param e
      */
     public void keyPressed(KeyEvent e) {
+        //?Question：这是并发执行的吗？不然自动寻路算法直接跑出结果，怎会一步步打印
         screen = screen.respondToUserInput(e);
         repaint();
     }
